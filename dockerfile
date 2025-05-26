@@ -16,7 +16,7 @@ RUN gdown --id 1SqN57FUdT-esT26R3HwStJe5f1Dzu3No -O Modelo1.pkl
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Exponer el puerto usado por Uvicorn
-EXPOSE 7860
+EXPOSE 8080
 
 # Comando para correr el servidor FastAPI
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
