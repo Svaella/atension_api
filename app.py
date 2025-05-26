@@ -18,12 +18,12 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# 🎯 Modelo con caché (solo se carga una vez)
+# 🎯 Carga del modelo con caché (solo una vez)
 @lru_cache()
 def get_model():
     return joblib.load("Modelo1.pkl")
 
-# 🎯 Tabla
+# 🎯 Tabla de resultados
 class HTARegistro(Base):
     __tablename__ = "evaluacion_hta"
     id = Column(Integer, primary_key=True, index=True)
@@ -47,7 +47,7 @@ class HTARegistro(Base):
 # ✅ Crear tabla si no existe
 Base.metadata.create_all(bind=engine)
 
-# 🎯 Modelo de entrada
+# 🎯 Entrada de datos del usuario
 class InputData(BaseModel):
     Gender: str
     Age: float
@@ -82,9 +82,11 @@ def predict(data: InputData):
         }])
 
         prob = model.predict_proba(df)[0][1]
-        if prob >= 0.75:
+        probabilidad = float(round(prob, 2))  # 🔥 Conversión explícita
+
+        if probabilidad >= 0.75:
             riesgo = "Alto"
-        elif prob >= 0.5:
+        elif probabilidad >= 0.5:
             riesgo = "Moderado"
         else:
             riesgo = "Bajo"
@@ -105,13 +107,13 @@ def predict(data: InputData):
             puntaje_conocimiento_hta=data.HTA_Quiz_Score,
             respuestas_hta=str(data.HTA_Quiz_Answers),
             riesgo=riesgo,
-            probabilidad=round(prob, 2)
+            probabilidad=probabilidad
         )
         db.add(nuevo)
         db.commit()
         db.close()
 
-        return {"riesgo": riesgo, "probabilidad": round(prob, 2)}
+        return {"riesgo": riesgo, "probabilidad": probabilidad}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
