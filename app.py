@@ -7,14 +7,21 @@ from sqlalchemy import create_engine, Column, Integer, String, Numeric, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
+from functools import lru_cache
 
-
+# 🎯 FastAPI
+app = FastAPI()
 
 # 🎯 Base de datos
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# 🎯 Modelo con caché (solo se carga una vez)
+@lru_cache()
+def get_model():
+    return joblib.load("Modelo1.pkl")
 
 # 🎯 Tabla
 class HTARegistro(Base):
@@ -40,9 +47,7 @@ class HTARegistro(Base):
 # ✅ Crear tabla si no existe
 Base.metadata.create_all(bind=engine)
 
-# 🎯 FastAPI
-app = FastAPI()
-
+# 🎯 Modelo de entrada
 class InputData(BaseModel):
     Gender: str
     Age: float
@@ -58,11 +63,11 @@ class InputData(BaseModel):
     HTA_Quiz_Score: int
     HTA_Quiz_Answers: dict
 
+# 🎯 Endpoint de predicción
 @app.post("/predict")
 def predict(data: InputData):
-    # 🎯 Modelo ML
-    model = joblib.load("Modelo1.pkl")
     try:
+        model = get_model()
         df = pd.DataFrame([{
             "Gender": data.Gender,
             "Age": data.Age,
@@ -75,6 +80,7 @@ def predict(data: InputData):
             "Alcohol_Level": data.Alcohol_Level,
             "Salt_Level": data.Salt_Level
         }])
+
         prob = model.predict_proba(df)[0][1]
         if prob >= 0.75:
             riesgo = "Alto"
@@ -109,5 +115,3 @@ def predict(data: InputData):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
