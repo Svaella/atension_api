@@ -21,7 +21,7 @@ Base = declarative_base()
 # 🎯 Carga del modelo con caché (solo una vez)
 @lru_cache()
 def get_model():
-    return joblib.load("RF+XGBoost.pkl")
+    return joblib.load("RF.pkl")
 
 # 🎯 Tabla de resultados
 class HTARegistro(Base):
