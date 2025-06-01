@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir gdown
 COPY . /app
 
 # Descarga el modelo desde Google Drive
-RUN gdown --id 1rnC8kCqlLrWirHA7dkJyink-9wzzU7H8 -O RF+XGBoost.pkl
+RUN gdown --id 1wGXJSlL6TBCjAO9CzDg3OdI70klAdMQK -O RF.pkl
 
 # Instala el resto de dependencias
 RUN pip install --no-cache-dir -r requirements.txt
