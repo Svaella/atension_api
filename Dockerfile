@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir gdown
 COPY . /app
 
 # Descarga el modelo desde Google Drive
-RUN gdown --id 1SqN57FUdT-esT26R3HwStJe5f1Dzu3No -O Modelo1.pkl
+#RUN gdown --id 1SqN57FUdT-esT26R3HwStJe5f1Dzu3No -O Modelo1.pkl
+RUN gdown --id 1JLwXn_y3zXfS-tjeJFOOHc3ZIUeoP-xO -O modelo_pipeline_smoteenn.pkl
 
 # Instala el resto de dependencias
 RUN pip install --no-cache-dir -r requirements.txt
