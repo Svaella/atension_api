@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir gdown
 COPY . /app
 
 # Descarga el modelo desde Google Drive
-RUN gdown --id 1wGXJSlL6TBCjAO9CzDg3OdI70klAdMQK -O RF.pkl
+RUN gdown --id 1sK0Ku0gugm6CFaG6KZcISIzGjIvhOoHS -O Ensemble.pkl
 
 # Instala el resto de dependencias
 RUN pip install --no-cache-dir -r requirements.txt
